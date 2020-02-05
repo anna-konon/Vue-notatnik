@@ -1,0 +1,204 @@
+html, body {
+    height: 100%;
+    margin: 0px;
+    font-family: 'Montserrat', sans-serif;
+}
+[v-cloak] > * {
+    display: none;
+}
+#myapp {
+    height: 100vh;
+    background-image: url('../images/notebook.jpg');
+    /* height: calc(100vh - 154px); */
+    background-size: 100% auto;
+}
+h1 {
+    background: transparent;
+    margin: 0;
+    background-size: 100% auto;
+    padding: 40px 48px 75px 48px;
+    color: #fff;
+    background-position: 100% 225%;
+}
+h4 {
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 0;
+}
+h3 {
+    margin-top: 0;
+    padding: 20px 0;
+}
+ul {
+    list-style-type: none;
+}
+.hello-message {
+    text-align: center;
+    position: absolute;
+    padding: 160px 13% 0 13%;
+    width: 50%;
+    color: #fff;
+    line-height: 45px;
+    font-size: 30px;
+}
+.latest-records-content {
+    display: flex;
+}
+.latest-records,
+.all-records {
+    width: 100%;
+    padding: 0 40px;
+    background-color: #fff;
+}
+ul li {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-top: 1px solid #eee;
+}
+ul li > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+}
+.single-latest-records {
+    margin-top: 80px;
+    margin-left: 20px;
+}
+ul li:hover {
+    background-color: #eee;
+}
+.nav-tabs {
+    border-bottom: 0;
+    margin-top: -47px;
+}
+.nav-tabs>li {
+    height: auto;
+    padding: 0;
+    border-top: 0;
+    cursor: pointer;
+}
+.nav-tabs>li:hover {
+    border-radius: 4px 4px 0 0;
+}
+.nav-tabs>li:hover a {
+    color: #555;
+}
+.nav-tabs>li a {
+    color: #fff;
+    font-size: 18px;
+}
+.navbar {
+    border-radius: 0;
+}
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    width: 100%;
+}
+.sidebar {
+    font-size: 30px;
+    width: 100%;
+}
+.content {
+    width: 100%;
+}
+.searching-view {
+    background-color: #f46d5b;
+    height: 50%;
+    width: 50%;
+    position: relative;
+    cursor: pointer;
+}
+.adding-view {
+    background-color: #4fbfc4;
+    height: 50%;
+    width: 50%;
+    position: relative;
+    cursor: pointer;
+}
+.container-fluid {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10px 0 5px;
+}
+.container-fluid div {
+    display: flex;
+}
+.add-record {
+    padding: 30px 30px 80px 30px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+}
+.add-record div {
+    width: 100%;
+}
+.add-record-button {
+    position: relative;
+}
+.add-record-button .btn {
+    position: absolute;
+    font-size: 16px;
+    margin: 20px 0;
+}
+.add-record-button .btn-primary {
+    right: 0;
+}
+.add-record-button .btn-warning {
+    left: 0;
+}
+select {
+    padding: 6px;
+}
+.w-content {
+    width: 60%;
+}
+.w-content-search {
+    width: 60%;
+}
+.w-buttons {
+    padding-right: 20px;
+}
+.ck-content {
+    height: 300px;
+}
+.ck.ck-editor {
+    width: 100%;
+}
+.latesNoteContent {
+    display: none;
+    padding: 10px;
+}
+.latesNoteContent .btn-warning {
+    float: right;
+    margin-top: 10px;
+}
+.ui-autocomplete {
+    max-width: 300px;
+    padding: 0;
+    background-color: #fff;
+    border: 1px solid #eee;
+}
+.ui-autocomplete li {
+    padding: 5px;
+    cursor: pointer;
+}
+.ui-helper-hidden-accessible {
+    display: none;
+}
+.require {
+    color: #ff0000;
+}
+.fade-enter-active, .fade-leave-active {
+    transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to {
+    opacity: 0;
+}

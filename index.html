@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Notatnik</title>
+    <script src="js/vue.js"></script>
+    <script src="js/vue-router.js"></script>
+    <script src="js/axios.min.js"></script>
+	<script src="js/vuex.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+	<script src="//cdn.ckeditor.com/4.11.3/standard/ckeditor.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@ckeditor/ckeditor5-build-classic@12.0.0/build/ckeditor.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@ckeditor/ckeditor5-vue@1.0.0-beta.1/dist/ckeditor.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+	integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+	<link href="https://fonts.googleapis.com/css?family=Montserrat&amp;subset=latin-ext" rel="stylesheet">
+	<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+		<div id='myapp'>
+			<h1>Notatnik</h1>
+			<div class="wrapper" v-cloak>
+				<ul class="nav nav-tabs">
+					<li class="search-tab" :class="{'active': activetab === 1}"><a v-on:click="activetab=1; cleanRecords()" v-bind:class="[ activetab === 1 ? 'active' : '' ]">Szukaj</a></li>
+					<li :class="{'active': activetab === 2}"><a v-on:click="activetab=2; latestRecords()" v-bind:class="[ activetab === 2 ? 'active' : '' ]">Ostatnie wpisy</a></li>
+					<li :class="{'active': activetab === 3}"><a v-on:click="activetab=3" v-bind:class="[ activetab === 3 ? 'active' : '' ]">Dodaj wpis</a></li>
+				</ul>
+				<div class="content">
+					<!-- TAB 1 #SHOW RECORDS -->
+					<div class="navbar navbar-default" v-if="activetab === 1">
+						<div class="container-fluid">
+							<div>
+								<div class="navbar-header">
+									<a class="navbar-brand" href="#">Szukaj</a>
+								</div>
+								<div class="collapse navbar-collapse">
+									<form class="navbar-form navbar-left" @keydown.enter.prevent="showResults">
+										<div class="form-group">
+											<input type="text" id="autocomplete" class="form-control" placeholder="szukaj" v-model="searchInput" >
+										</div>
+										<button type="button" class="btn btn-success" @click="showResults">Szukaj</button>
+									</form>
+								</div>
+							</div>
+	
+							<div>
+								<div class="navbar-header">
+									<a class="navbar-brand" href="#">Kategoria</a>
+								</div>
+								<div class="collapse navbar-collapse">
+									<form class="navbar-form navbar-left">
+										<div class="form-group">
+											<select v-model="selected" @change="getCategory">
+												<option value="">Wybierz kategorię</option>
+												<option v-for="kategoria in categories" :key="kategoria.id">{{ kategoria.kategoria }}</option>
+											</select>
+										</div>
+										<button type="button" class="btn btn-success" @click="showResultsCategories">Wszystkie wpisy</button>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<ul class="all-records" v-if="activetab === 1" v-cloak>
+						<h3 v-show="showTitle">Wyniki wyszukiwania po frazie: "<span> {{ searchInput }} </span>"</h3>
+						<h3 v-show="showTitleCategory">Wyniki wyszukiwania po kategorii: "<span class="categotyTitileSearch">{{ categories[selected] }}</span>"</h3>
+						<li v-for='(item,index) in szukaneWpisy' class="all-records-item">
+							<div>
+								<img src="images/notes.png" width="60px" alt="">
+								<div class="w-content-search">
+									<h4>{{ item.tytul }}</h4>
+									<p>kategoria: {{ item.kategoria }}</p>
+								</div>
+								<div>
+									<p>{{ item.dataWpisu }}</p>
+								</div>
+								<div class="w-buttons">
+									<input type='button' class="btn btn-success" value='Zobacz'>&nbsp;
+									<input type='button' class="btn btn-danger" value='Usuń' @click='deleteRecord(index,item.id);'>
+								</div>
+							</div>
+							<div class="latesNoteContent">
+								<ckeditor :editor="editor" v-model="item.wpis" :config="editorConfig"></ckeditor>
+								<input type='button' class="btn btn-warning" value='Zapisz zmiany' @click='updateRecord(index, item.id, item.wpis);'>
+							</div>
+						</li>
+					</ul>
+
+					<div v-if="activetab === 1" v-show="!hideTitle">
+						<h3 class="hello-message">Witaj na stronie notatnika gdzie możesz szybko i łatwo szukać oraz dodawać notatki.</h3>
+					</div>
+
+					<!-- TAB 2 # SHOW LESTES RECORDS -->
+
+					<div class="latest-records-content" v-if="activetab === 2" v-cloak>
+						<ul class="latest-records">
+							<br>
+							<h3>5 ostatnich wpisów</h3>
+							<li class="latest-records-item" v-for='(w, index) in ostatnieWpisy' :key="w.id" :data-id="w.id">
+								<div>
+									<img src="images/notes.png" width="60px" alt="">
+									<div class="w-content">
+										<h4>{{ w.tytul }}</h4>
+										<p>kategoria: {{ w.kategoria }}</p>
+									</div>
+									<div>
+										<p>{{ w.dataWpisu }}</p>
+									</div>
+									<div class="w-buttons">
+										<input type='button' class="btn btn-success" value='Zobacz'>
+									</div>
+								</div>
+								<div class="latesNoteContent">
+									<ckeditor :editor="editor" v-model="w.wpis" :config="editorConfig"></ckeditor>
+								</div>
+							</li>
+						</ul>
+					</div>
+
+					<!-- TAB 3 # Add record -->
+					<div class="add-record" v-if="activetab === 3" v-cloak>
+						<div>
+							<h2>Nowy wpis</h2>
+							<transition name="fade">
+								<div class="alert alert-danger" role="alert" v-show="showAlert">Proszę wypełnić wszystkie pola!</div>
+							</transition>
+							<label>Tytuł <span class="require">*</span></label><br />
+							<input type="text" value="" v-model="tytul"><br /><br />
+							<label>Wpis <span class="require">*</span></label><br />
+							<ckeditor :editor="editor" v-model="wpisNowy" :config="editorConfig"></ckeditor>
+							<p v-show="showText">Pole nie może być puste</p>
+							<br>
+							<span class="limiter">{{charactersLeft}}</span>
+						</div>
+						<div>
+							<label>Kategoria <span class="require">*</span></label><br />
+							<select v-model="selectedAdd">
+								<option value="">Wybierz kategorię</option>
+								<option v-for="kat in categories" :key="kat.id">{{ kat.kategoria }}</option>
+							</select>
+							<span>lub wpisz nową</span>
+							<input type='text' v-model='kategoria'>
+							<span id="date">{{ dataWpisu }}</span>
+							<br /><br />
+							<transition name="fade">
+								<div class="alert alert-success" role="alert" v-show="showSuccess">Wpis został dodany!</div>
+							</transition>
+						</div>
+						<div class="add-record-button">
+							<input type='button' value='Anuluj' @click='clearFields' class="btn btn-danger">
+							<input type='button' value='Dodaj wpis' @click='addRecord' class="btn btn-primary">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Script -->
+		<script src="./main.js"></script>
+		<script>
+		$( function() {
+
+			// Single Select
+			$( "#autocomplete" ).autocomplete({
+				source: function( request, response ) {
+				// Fetch data
+					$.ajax({
+						url: "fetchData.php",
+						type: 'post',
+						dataType: "json",
+						data: {
+							search: request.term
+						},
+							success: function( data ) {
+								response( data );
+							}
+						});
+				},
+				select: function (event, ui) {
+				// Set selection
+					$('#autocomplete').val(ui.item.label); // display the selected text
+					return false;
+				}
+			});
+		});
+</script>
+	</body>
+</html>
