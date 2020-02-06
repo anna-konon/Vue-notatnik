@@ -37,7 +37,7 @@ var app = new Vue({
         selectedAdd: '',
         wpisNowy: '',
         activetab: 1,
-        activeNum: 1,
+        activeNum: 5,
         editor: ClassicEditor,
         editorData: '<p>Wpisz swoją notatkę</p>',
         editorConfig: {},
@@ -45,7 +45,8 @@ var app = new Vue({
         showAlert: false,
         hideTitle: false,
         showContent: 'Zobacz',
-        hideContent: 'Zamknij'
+        hideContent: 'Zamknij',
+        showThisAlert: false
     },
     methods: {
         getCategory: function() {
@@ -110,34 +111,14 @@ var app = new Vue({
                 console.log(error);
             });
         },
-        latestFiveRecords: function(){
+        latestFiveRecords: function(num){
+            var selectedOption = num;
             axios.post('ajaxfile.php', {
-                request: 8
+                request: 8,
+                num: selectedOption
             })
             .then(function (response) {
-                app.ostatnieWpisy = response.data;
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-        },
-        latestTenRecords: function(){
-            axios.post('ajaxfile.php', {
-                request: 81
-            })
-            .then(function (response) {
-                app.ostatnieWpisy = response.data;
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-        },
-        latestFifteenRecords: function(){
-            axios.post('ajaxfile.php', {
-                request: 82
-            })
-            .then(function (response) {
-                app.ostatnieWpisy = response.data;
+                app.ostatnieWpisy = response.data
             })
             .catch(function (error) {
                 console.log(error);
@@ -188,11 +169,13 @@ var app = new Vue({
             }
             this.hide();
         },
-        hide: function() {
+        hide: function(id) {
             setTimeout(() => {
                 this.showSuccess = false;
                 this.showAlert = false;
-            }, 4000);
+                let elementId = document.getElementById("alert-" + id);
+                elementId.style.display = "none";
+            }, 2000);
         },
         clearFields: function() {
             this.wpisNowy = '';
@@ -202,39 +185,39 @@ var app = new Vue({
             this.dataWpisu = today + " " + time;
         },
         updateRecord: function(index,id,wpis){
-
+            let elementId = document.getElementById("alert-" + id);
+            elementId.style.display = "block";
             // Read value from Textbox
             var wpis = this.szukaneWpisy[index].wpis;
 
-            // if(kategoria !=''){
                 axios.post('ajaxfile.php', {
                     request: 3,
                     id: id,
                     wpis: wpis
                 })
                 .then(function (response) {
-                    alert(response.data);
+                    response.data;
                 })
                 .catch(function (error) {
                     console.log(error);
                 });
-            // }
+                this.hide(id);
         },
         deleteRecord: function(index,id){
-            
-            axios.post('ajaxfile.php', {
-                request: 4,
-                id: id
-            })
-            .then(function (response) {
-                // Remove index from wpisy
-                app.szukaneWpisy.splice(index, 1);
-                alert(response.data);
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-                
+            let result = confirm("Czy na pewno chcesz ususnąć rekord?");
+            if (result === true) {
+                axios.post('ajaxfile.php', {
+                    request: 4,
+                    id: id
+                })
+                .then(function (response) {
+                    // Remove index from wpisy
+                    app.szukaneWpisy.splice(index, 1);
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+            }
         },
         cleanRecords: function() {
             this.szukaneWpisy = '';
@@ -269,7 +252,7 @@ var app = new Vue({
         }
     },
     created: function(){
-        this.latestFiveRecords();
+        this.latestFiveRecords(5);
         this.allCategories();
         $('.ui-menu-item').on('focus', function() {
             this.showResults();

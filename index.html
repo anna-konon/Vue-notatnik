@@ -24,7 +24,7 @@
 			<div class="wrapper" v-cloak>
 				<ul class="nav nav-tabs">
 					<li class="search-tab" :class="{'active': activetab === 1}"><a v-on:click="activetab=1; cleanRecords()" v-bind:class="[ activetab === 1 ? 'active' : '' ]">Szukaj</a></li>
-					<li :class="{'active': activetab === 2}"><a v-on:click="activetab=2; latestFiveRecords()" v-bind:class="[ activetab === 2 ? 'active' : '' ]">Ostatnie wpisy</a></li>
+					<li :class="{'active': activetab === 2}"><a v-on:click="activetab=2; latestFiveRecords(5)" v-bind:class="[ activetab === 2 ? 'active' : '' ]">Ostatnie wpisy</a></li>
 					<li :class="{'active': activetab === 3}"><a v-on:click="activetab=3" v-bind:class="[ activetab === 3 ? 'active' : '' ]">Dodaj wpis</a></li>
 				</ul>
 				<div class="content">
@@ -38,7 +38,7 @@
 								<div class="collapse navbar-collapse">
 									<form class="navbar-form navbar-left" @keydown.enter.prevent="showResults">
 										<div class="form-group">
-											<input type="text" id="autocomplete" class="form-control" placeholder="szukaj" v-model="searchInput" >
+											<input type="text" id="autocomplete" class="form-control" placeholder="szukaj" v-model="searchInput" onkeydown="getDataAutocomplete()" >
 										</div>
 										<button type="button" class="btn btn-success" @click="showResults">Szukaj</button>
 									</form>
@@ -84,6 +84,7 @@
 							</div>
 							<div class="latesNoteContent">
 								<ckeditor :editor="editor" v-model="item.wpis" :config="editorConfig"></ckeditor>
+								<p v-show="showThisAlert" class="show-save-alert" :id="'alert-' + item.id">Zmiany zostały zapisane!</p>
 								<input type='button' class="btn btn-warning" value='Zapisz zmiany' @click='updateRecord(index, item.id, item.wpis);'>
 							</div>
 						</li>
@@ -100,9 +101,9 @@
 							<br>
 							<ul class="numRecords">
 								<li class="numRecord">Ostatnie wpisy: </li>
-								<li class="numRecord numRecordItem fiveRecords" :class="{'active': activeNum === 1}"><span v-on:click="activeNum=1; latestFiveRecords()" v-bind:class="[ activeNum === 1 ? 'active' : '' ]">5</span></li>
-								<!-- <li class="numRecord numRecordItem tenRecords" :class="{'active': activeNum === 2}"><span v-on:click="activeNum=2; latestTenRecords()" v-bind:class="[ activeNum === 2 ? 'active' : '' ]">10</span></li>
-								<li class="numRecord numRecordItem fifteenRecords" :class="{'active': activeNum === 3}"><span v-on:click="activeNum=3; latestFifteenRecords()" v-bind:class="[ activeNum === 3 ? 'active' : '' ]">15</span></li> -->
+								<li class="numRecord numRecordItem fiveRecords" :class="{'active': activeNum === 5}"><span v-on:click="activeNum=5; latestFiveRecords(5)" v-bind:class="[ activeNum === 5 ? 'active' : '' ]">5</span></li>
+								<li class="numRecord numRecordItem tenRecords" :class="{'active': activeNum === 10}"><span v-on:click="activeNum=10; latestFiveRecords(10)" v-bind:class="[ activeNum === 10 ? 'active' : '' ]">10</span></li>
+								<li class="numRecord numRecordItem fifteenRecords" :class="{'active': activeNum === 15}"><span v-on:click="activeNum=15; latestFiveRecords(15)" v-bind:class="[ activeNum === 15 ? 'active' : '' ]">15</span></li>
 							</ul>
 							<li class="latest-records-item" v-for='(w, index) in ostatnieWpisy' :key="w.id" :data-id="w.id" :id="w.id">
 								<div>
@@ -166,9 +167,7 @@
 		<!-- Script -->
 		<script src="./main.js"></script>
 		<script>
-		$( function() {
-
-			// Single Select
+		function getDataAutocomplete() {
 			$( "#autocomplete" ).autocomplete({
 				source: function( request, response ) {
 				// Fetch data
@@ -179,7 +178,7 @@
 						data: {
 							search: request.term
 						},
-							success: function( data ) {
+						success: function( data ) {
 								response( data );
 							}
 						});
@@ -190,7 +189,7 @@
 					return false;
 				}
 			});
-		});
+		}
 </script>
 	</body>
 </html>

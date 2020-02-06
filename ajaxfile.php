@@ -110,29 +110,8 @@ if($request == 7){
 }
 // Fetch letest records
 if($request == 8){
-	$wpisData = mysqli_query($con,"select * from wpisy order by dataWpisu desc LIMIT 5");
-
-	$response = array();
-	while($row = mysqli_fetch_assoc($wpisData)){
-	    $response[] = $row;
-	}
-
-	echo json_encode($response);
-	exit;
-}
-if($request == 81){
-	$wpisData = mysqli_query($con,"select * from wpisy order by dataWpisu desc LIMIT 10");
-
-	$response = array();
-	while($row = mysqli_fetch_assoc($wpisData)){
-	    $response[] = $row;
-	}
-
-	echo json_encode($response);
-	exit;
-}
-if($request == 82){
-	$wpisData = mysqli_query($con,"select * from wpisy order by dataWpisu desc LIMIT 15");
+	$limit = $data->num;
+	$wpisData = mysqli_query($con,"select * from wpisy order by dataWpisu desc LIMIT ".$limit.";");
 
 	$response = array();
 	while($row = mysqli_fetch_assoc($wpisData)){
