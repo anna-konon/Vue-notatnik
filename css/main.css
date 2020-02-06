@@ -49,6 +49,8 @@ ul {
     width: 100%;
     padding: 0 40px;
     background-color: #fff;
+    max-height: 75vh;
+    overflow: auto;
 }
 ul li {
     display: flex;
@@ -201,4 +203,34 @@ select {
 }
 .fade-enter, .fade-leave-to {
     opacity: 0;
+}
+.numRecords {
+    padding: 20px 0;
+}
+.numRecord {
+    display: inline;
+    border: 0;
+}
+.numRecord:first-child {
+    cursor: auto;
+    pointer-events: none;
+}
+.numRecordItem {
+    padding: 5px 10px;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
+    border: 1px solid #333;
+    cursor: pointer;
+}
+.numRecord.active, .numRecord.active:hover {
+    background-color: darkgrey;
+    color: #fff;
+    cursor: auto;
+}
+.numRecord:hover {
+    background-color: chocolate;
+    color: #fff;
 }

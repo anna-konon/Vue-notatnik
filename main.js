@@ -37,12 +37,15 @@ var app = new Vue({
         selectedAdd: '',
         wpisNowy: '',
         activetab: 1,
+        activeNum: 1,
         editor: ClassicEditor,
         editorData: '<p>Wpisz swoją notatkę</p>',
         editorConfig: {},
         showSuccess: false,
         showAlert: false,
         hideTitle: false,
+        showContent: 'Zobacz',
+        hideContent: 'Zamknij'
     },
     methods: {
         getCategory: function() {
@@ -58,11 +61,11 @@ var app = new Vue({
             })
             .then(function (response) {
                 app.szukaneWpisy = response.data;
-                app.refresh();
             })
             .catch(function (error) {
                 console.log(error);
             });
+            this.resetToDefault();
             this.show = true;
             this.showTitleCategory = true;
             this.showTitle = '';
@@ -88,7 +91,6 @@ var app = new Vue({
             })
             .then(function (response) {
                 app.szukaneWpisy = response.data;
-                app.refresh();
             })
             .catch(function (error) {
                 console.log(error);
@@ -108,13 +110,34 @@ var app = new Vue({
                 console.log(error);
             });
         },
-        latestRecords: function(){
+        latestFiveRecords: function(){
             axios.post('ajaxfile.php', {
                 request: 8
             })
             .then(function (response) {
                 app.ostatnieWpisy = response.data;
-                app.refresh();
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+        },
+        latestTenRecords: function(){
+            axios.post('ajaxfile.php', {
+                request: 81
+            })
+            .then(function (response) {
+                app.ostatnieWpisy = response.data;
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+        },
+        latestFifteenRecords: function(){
+            axios.post('ajaxfile.php', {
+                request: 82
+            })
+            .then(function (response) {
+                app.ostatnieWpisy = response.data;
             })
             .catch(function (error) {
                 console.log(error);
@@ -221,21 +244,32 @@ var app = new Vue({
             this.selected = '';
             this.hideTitle = false;
         },
-        refresh: function() {
-            $(document).ready(function() {
-                $('.btn-success').on('click', function() {
-                    if ($(this).val() == 'Zobacz') {
-                        $(this).val('Zamknij');
-                    } else {
-                        $(this).val('Zobacz');
-                    }
-                    $(this).parents('.latest-records-item, .all-records-item').find('.latesNoteContent').toggle();
-                });
-            });
+        showItemContent: function(id) {
+            let elementId = document.getElementById(id);
+            let button = elementId.querySelector('.btn-success');
+            let elementContent = elementId.querySelector('.latesNoteContent');
+            if (button.value == 'Zobacz') {
+                this.resetToDefault();
+                button.value = this.hideContent;
+                elementContent.style.display = "block";
+            } else {
+                button.value = this.showContent;
+                elementContent.style.display = "none";
+            }
         },
+        resetToDefault: function() {
+            let allButtons = document.querySelectorAll('.btn-success');
+            for (let i = 0; i < allButtons.length; i++) {
+                allButtons[i].value = this.showContent;
+            }
+            let allItemsContent = document.querySelectorAll('.latesNoteContent');
+            for (let j = 0; j < allItemsContent.length; j++) {
+                allItemsContent[j].style.display = "none";
+            }
+        }
     },
     created: function(){
-        this.latestRecords();
+        this.latestFiveRecords();
         this.allCategories();
         $('.ui-menu-item').on('focus', function() {
             this.showResults();

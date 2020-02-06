@@ -120,6 +120,28 @@ if($request == 8){
 	echo json_encode($response);
 	exit;
 }
+if($request == 81){
+	$wpisData = mysqli_query($con,"select * from wpisy order by dataWpisu desc LIMIT 10");
+
+	$response = array();
+	while($row = mysqli_fetch_assoc($wpisData)){
+	    $response[] = $row;
+	}
+
+	echo json_encode($response);
+	exit;
+}
+if($request == 82){
+	$wpisData = mysqli_query($con,"select * from wpisy order by dataWpisu desc LIMIT 15");
+
+	$response = array();
+	while($row = mysqli_fetch_assoc($wpisData)){
+	    $response[] = $row;
+	}
+
+	echo json_encode($response);
+	exit;
+}
 
 // Search id record
 if($request == 9){
@@ -148,3 +170,4 @@ if($request == 10){
 	echo json_encode($response);
 	exit;
 }
+?>
